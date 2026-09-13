@@ -95,13 +95,13 @@ Video stayed visible on purpose. The users are hospital staff coordinating case 
 
 ---
 
-## Decisions made against a suggestion
+## Decisions made during the pass
 
-Two things were proposed during the pass and not built.
+Two things came up and were deliberately left out.
 
-**A per-message hover toolbar was offered as new scope.** It exists in the Figma prototype but was not in the master prompt or the critique. Building it would have added an unverified component outside the loop the prompt package is meant to demonstrate. It stayed out and is recorded as a limitation instead.
+**A per-message hover toolbar.** It exists in the Figma prototype but was not in the master prompt or the critique. Building it mid-pass would have added an unverified component outside the loop the prompt package is meant to demonstrate, so I left it out and recorded it as a limitation.
 
-**Custom emoji artwork.** The reaction pill container came from the Figma export, but the emoji inside stayed as system emoji. There is no custom emoji set to export, and Slack and Teams both render system emoji here.
+**Custom emoji artwork.** The reaction pill container came from the Figma export, but the emoji inside stayed as system emoji. There is no custom emoji set in the design, and Slack and Teams both render system emoji in the same position.
 
 ---
 
