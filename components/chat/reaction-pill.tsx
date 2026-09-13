@@ -22,9 +22,7 @@ export function ReactionPill({
       aria-label={`${emoji} reaction, ${count} ${count === 1 ? "person" : "people"}${reacted ? ", including you" : ""}`}
       className={cn(
         "inline-flex h-7 items-center gap-2 rounded-full border px-2",
-        reacted
-          ? "border-primary bg-accent"
-          : "border-border bg-[#FFFFFF] group-hover:border-[#D6D2CA] hover:bg-[#F0EDE8]",
+        reacted ? "border-primary bg-accent" : "border-border bg-[#FFFFFF]",
         FOCUS_RING
       )}
     >
