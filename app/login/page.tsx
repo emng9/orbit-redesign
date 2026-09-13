@@ -40,7 +40,8 @@ export default function LoginPage() {
       className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 py-16"
       style={{
         fontFamily: "var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif",
-        background: "radial-gradient(circle at 50% 42%, #F6E4DB 0%, #FAF9F7 70%)",
+        background:
+          "radial-gradient(ellipse 90% 65% at 50% 32%, #F6E4DB 0%, #F6E4DB 45%, #FAF9F7 90%)",
       }}
     >
       <div className="relative z-10 flex w-full flex-col items-center">
