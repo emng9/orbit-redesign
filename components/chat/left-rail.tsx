@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import {
   Calendar,
   CheckSquare,
@@ -172,6 +173,13 @@ function MobileNavButton({ item, active }: { item: MobileNavItem; active: boolea
 }
 
 export function LeftRail({ activeId = "chat" }: { activeId?: string }) {
+  const router = useRouter()
+
+  function handleSignOut() {
+    window.localStorage.removeItem("orbit-authenticated")
+    router.push("/login")
+  }
+
   return (
     <>
       <nav
@@ -196,6 +204,7 @@ export function LeftRail({ activeId = "chat" }: { activeId?: string }) {
           <button
             type="button"
             aria-label="Sign out"
+            onClick={handleSignOut}
             className={cn(
               "flex size-9 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-[#F0EDE8]",
               HOVER_TRANSITION,
