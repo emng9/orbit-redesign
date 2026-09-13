@@ -9,6 +9,7 @@ import { MessageRow } from "@/components/chat/message-row"
 import { DateDivider } from "@/components/chat/date-divider"
 import { Composer } from "@/components/chat/composer"
 import { VideoMenu } from "@/components/chat/video-menu"
+import { MemberPopover } from "@/components/chat/member-popover"
 
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
@@ -38,24 +39,6 @@ function HeaderIconButton({
       )}
     >
       {children}
-    </button>
-  )
-}
-
-function MemberCountPill({ count }: { count: number }) {
-  return (
-    <button
-      type="button"
-      aria-label={`${count} members`}
-      title={`${count} members`}
-      className={cn(
-        "flex items-center gap-2 rounded-lg border border-border bg-card px-2.5 py-1.5 hover:bg-[#F0EDE8]",
-        HOVER_TRANSITION,
-        FOCUS_RING
-      )}
-    >
-      <Users size={20} strokeWidth={1.5} className="text-[#5C6B79]" />
-      <span className="text-[15px] font-semibold leading-none text-foreground">{count}</span>
     </button>
   )
 }
@@ -214,7 +197,7 @@ export function Conversation({
           {conversation?.name ?? "Conversation"}
         </h2>
         <div className="hidden shrink-0 items-center gap-4 md:flex">
-          <MemberCountPill count={conversation?.participantCount ?? 0} />
+          <MemberPopover count={conversation?.participantCount ?? 0} />
           <VideoMenu />
           <HeaderIconButton label="Search in conversation">
             <Search size={20} strokeWidth={1.5} />

@@ -84,6 +84,74 @@ The first version of this had the open state as a clay circle. Comparing against
 
 Video stayed visible on purpose. The users are hospital staff coordinating case work from a phone, and putting a call behind a menu costs a tap at the moment it matters most.
 
+### 11. Search field clear button
+
+The clear button in the conversation search was rendering blue. It turned out not to be my component at all.
+
+> The clear button in the search field is still blue. Determine whether it is the browser's native search input clear control rather than a component we style.
+>
+> If it is native, remove it with the webkit-search-cancel-button pseudo-element set to appearance none, and render our own clear button instead: a 16px lucide X in #5C6B79, shown only when the field has text, with a #F0EDE8 rounded square on hover at 8px radius and the standard focus ring.
+>
+> If it is our own component, tell me which file draws it.
+
+Chrome on macOS draws the native control using the system accent colour, so the appearance of that field was outside the design system entirely. Worth catching, because the README claims every colour on screen comes from the token list and this quietly contradicted it. Other browsers render it differently or not at all, which is the argument for replacing it rather than restyling it.
+
+### 12. Sign out
+
+> The sign out icon at the bottom of the left rail does nothing when clicked. Wire it up: clear the localStorage auth flag and redirect to /login. Same for the sign out item in the mobile bottom bar if one exists. Do not change anything else.
+
+A visible control that does nothing is worse than one that is absent, and a reviewer clicks everything.
+
+### 13. Interactive reactions
+
+Reactions rendered from mock data but could not be added or removed. Scope I added after the revision pass rather than a critique finding.
+
+> Make reactions interactive on the message hover toolbar. Do not change anything else.
+>
+> Clicking one of the three quick emoji in the hover toolbar adds that reaction to the message. If the current user has already reacted with it, clicking removes it. The count increments and decrements, and the pill disappears at zero.
+>
+> A pill the current user has reacted to uses the reacted state: 1px #B4380A border, #FDF1EC fill. A pill from others only uses the default state: 1px #E3E0DA border, white fill. Clicking an existing pill toggles the current user's reaction the same way.
+>
+> State lives in React state in the chat page, seeded from mock data. No persistence.
+>
+> Every pill is a button with an aria-label naming the emoji and the count, and it shows the standard 2px #B4380A focus ring.
+>
+> Run npm run build when done and confirm it passes.
+
+The two Figma exports for the pill were already in the build as default and reacted states. This gave them something to switch between.
+
+### 14. Member list popover
+
+> Clicking the member count pill in the conversation header opens a popover listing the participants. Do not change anything else.
+>
+> Popover: white, 1px #E3E0DA, 10px radius, soft shadow, 280px wide, anchored below the pill and right-aligned to it, 8px gap.
+>
+> Header inside it: "Members" as the uppercase label style, with the count after it.
+>
+> Each row is 48px: a 32px avatar with its presence dot, the name at 15px #0B1F33, and the role at 13px #5C6B79 below it. Rows fill #F0EDE8 on hover.
+>
+> Closes on Escape, on click outside, and on a second click of the pill. The pill uses the open state treatment while it is open, matching the video control.
+>
+> Add a role field to the users in mock-data.ts.
+>
+> Every row is focusable with the standard 2px #B4380A focus ring, and the popover traps focus while open.
+
+The audit found that in the original meeting room only two people carried a role tag, so everyone else was a name with no context. This is where that gets fixed.
+
+### 15. Design system audit of the new work
+
+Everything in 13 and 14 was new scope written after the master prompt, so none of it had been checked against the system.
+
+> Audit the three changes just made, the interactive reactions, the sign out, and the member list popover, against the design system. Report before changing anything.
+>
+> For each: name any hex that is not in the token list, any spacing not on the 4, 8, 12, 16, 24, 32, 48 scale, any radius other than 6, 8, 10 or full, any font size not on the type scale, and any interactive element missing an aria-label or the 2px #B4380A focus ring.
+>
+> Also confirm hover is #F0EDE8 everywhere and that accent is used only for active, selected, and open.
+>
+> List what does not match, then fix only those.
+
+Asking for the report before the fix is the point. A prompt that says "make it match" gets answered with "done" and no inspection, which is the exact failure recorded as A1 in the critique.
+
 ---
 
 ## What I changed by hand

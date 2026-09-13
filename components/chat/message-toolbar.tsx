@@ -30,7 +30,7 @@ export function MessageToolbar({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-full border border-border bg-card p-1.5 shadow-[0_1px_2px_rgba(11,31,51,0.06)] transition-opacity",
+        "flex items-center gap-2 rounded-full border border-border bg-card p-2 shadow-[0_1px_2px_rgba(11,31,51,0.06)] transition-opacity",
         className
       )}
     >

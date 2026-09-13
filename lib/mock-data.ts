@@ -42,6 +42,22 @@ export const userPresence: Record<string, boolean> = {
   me: true,
 }
 
+export type User = {
+  id: string
+  name: string
+  initials: string
+  role: string
+  online: boolean
+}
+
+/** Known people across the workspace, shown in the conversation members popover. */
+export const users: User[] = [
+  { id: currentUser.id, name: currentUser.name, initials: currentUser.initials, role: "Product Designer", online: userPresence.me },
+  { id: "priya-nair", name: "Priya Nair", initials: "PN", role: "Product Manager", online: userPresence["priya-nair"] },
+  { id: "alex-kim", name: "Alex Kim", initials: "AK", role: "Engineer", online: userPresence["alex-kim"] },
+  { id: "jordan-lee", name: "Jordan Lee", initials: "JL", role: "Engineering Lead", online: userPresence["jordan-lee"] },
+]
+
 export const conversations: Conversation[] = [
   {
     id: "product-weekly-sync",

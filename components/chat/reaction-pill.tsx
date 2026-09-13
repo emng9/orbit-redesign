@@ -21,8 +21,8 @@ export function ReactionPill({
       onClick={onClick}
       aria-label={`${emoji} reaction, ${count} ${count === 1 ? "person" : "people"}${reacted ? ", including you" : ""}`}
       className={cn(
-        "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5",
-        reacted ? "border-primary bg-accent" : "border-border bg-card",
+        "inline-flex h-7 items-center gap-2 rounded-full border px-2",
+        reacted ? "border-primary bg-accent" : "border-border bg-card hover:bg-[#F0EDE8]",
         FOCUS_RING
       )}
     >
