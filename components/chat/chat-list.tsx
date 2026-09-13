@@ -84,7 +84,7 @@ export function ChatList({
             className={cn(
               "h-9 w-full appearance-none rounded-lg border border-border bg-card pl-8 text-sm text-foreground outline-none placeholder:text-[#5C6B79]",
               query ? "pr-9" : "pr-3",
-              "[&::-webkit-search-cancel-button]:appearance-none",
+              "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-cancel-button]:[-webkit-appearance:none]",
               "focus-visible:border-[#B4380A] focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
             )}
           />
