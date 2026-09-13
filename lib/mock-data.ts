@@ -543,7 +543,7 @@ function isSameCalendarDay(a: Date, b: Date): boolean {
 }
 
 export function needsDateDivider(previous: Message | undefined, current: Message): boolean {
-  if (!previous) return true
+  if (!previous) return false
   const prevDate = new Date(previous.timestamp)
   const currDate = new Date(current.timestamp)
   if (!isSameCalendarDay(prevDate, currDate)) return true
