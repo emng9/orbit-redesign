@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ArrowLeft, MoreHorizontal, Search, Users } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { conversations, currentUser, fetchThread, needsDateDivider, formatDividerLabel, type Message } from "@/lib/mock-data"
+import { conversations, currentUser, fetchThread, needsDateDivider, formatDividerLabel, type Message, type Reaction } from "@/lib/mock-data"
 import { MessageRow } from "@/components/chat/message-row"
 import { DateDivider } from "@/components/chat/date-divider"
 import { Composer } from "@/components/chat/composer"
@@ -139,9 +139,14 @@ export function MessageSkeletonRow({ wide }: { wide: boolean }) {
 export function Conversation({
   conversationId,
   onBack,
+  reactionsByMessage,
+  onToggleReaction,
 }: {
   conversationId: string
   onBack?: () => void
+  /** Reaction overrides keyed by message id, owned by the chat page and seeded from mock data. */
+  reactionsByMessage: Record<string, Reaction[]>
+  onToggleReaction: (messageId: string, emoji: string, currentReactions: Reaction[]) => void
 }) {
   const conversation = conversations.find((c) => c.id === conversationId)
   const [status, setStatus] = useState<"loading" | "ready">("loading")
@@ -250,11 +255,14 @@ export function Conversation({
                   const previous = messages[index - 1]
                   const newGroup = !previous || previous.authorId !== message.authorId
                   const showDivider = needsDateDivider(previous, message)
+                  const reactions = reactionsByMessage[message.id] ?? message.reactions ?? []
                   return (
                     <div key={message.id}>
                       {showDivider && <DateDivider label={formatDividerLabel(message.timestamp)} />}
                       <MessageRow
                         message={message}
+                        reactions={reactions}
+                        onToggleReaction={(emoji) => onToggleReaction(message.id, emoji, reactions)}
                         showHeader={newGroup || showDivider}
                         newGroup={newGroup || showDivider}
                       />

@@ -19,7 +19,14 @@ const QUICK_REACTIONS = [
   { emoji: "😮", label: "React with surprised" },
 ]
 
-export function MessageToolbar({ className }: { className?: string }) {
+export function MessageToolbar({
+  className,
+  onReact,
+}: {
+  className?: string
+  /** Called with the emoji when one of the three quick-reaction buttons is clicked. */
+  onReact?: (emoji: string) => void
+}) {
   return (
     <div
       className={cn(
@@ -28,7 +35,13 @@ export function MessageToolbar({ className }: { className?: string }) {
       )}
     >
       {QUICK_REACTIONS.map((reaction) => (
-        <button key={reaction.emoji} type="button" aria-label={reaction.label} className={ICON_BUTTON}>
+        <button
+          key={reaction.emoji}
+          type="button"
+          aria-label={reaction.label}
+          onClick={() => onReact?.(reaction.emoji)}
+          className={ICON_BUTTON}
+        >
           <span className="text-[20px] leading-none" aria-hidden="true">
             {reaction.emoji}
           </span>

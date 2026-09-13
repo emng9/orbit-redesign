@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { formatMessageTime, userPresence, type Message } from "@/lib/mock-data"
+import { formatMessageTime, userPresence, type Message, type Reaction } from "@/lib/mock-data"
 import { AnimalAvatar } from "@/components/chat/animal-avatar"
 import { ReactionPill } from "@/components/chat/reaction-pill"
 import { MessageToolbar } from "@/components/chat/message-toolbar"
@@ -25,10 +25,15 @@ function renderMessageText(text: string) {
 
 export function MessageRow({
   message,
+  reactions,
+  onToggleReaction,
   showHeader,
   newGroup,
 }: {
   message: Message
+  /** Effective reactions for this message (mock seed, overridden by any local toggles). */
+  reactions: Reaction[]
+  onToggleReaction: (emoji: string) => void
   showHeader: boolean
   newGroup: boolean
 }) {
@@ -40,7 +45,10 @@ export function MessageRow({
         newGroup ? "mt-0" : "-mt-3"
       )}
     >
-      <MessageToolbar className="pointer-events-none absolute -top-2 right-6 opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100" />
+      <MessageToolbar
+        onReact={onToggleReaction}
+        className="pointer-events-none absolute -top-2 right-6 opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+      />
       <div className="w-8 shrink-0">
         {showHeader && (
           <AnimalAvatar
@@ -67,14 +75,15 @@ export function MessageRow({
         <p className="mt-0.5 text-[15px] leading-6 whitespace-pre-wrap text-foreground">
           {renderMessageText(message.text)}
         </p>
-        {message.reactions && message.reactions.length > 0 && (
+        {reactions.length > 0 && (
           <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {message.reactions.map((reaction, i) => (
+            {reactions.map((reaction) => (
               <ReactionPill
-                key={i}
+                key={reaction.emoji}
                 emoji={reaction.emoji}
                 count={reaction.count}
                 reacted={reaction.reactedByMe}
+                onClick={() => onToggleReaction(reaction.emoji)}
               />
             ))}
           </div>
