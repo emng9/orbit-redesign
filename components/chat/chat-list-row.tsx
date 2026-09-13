@@ -1,22 +1,28 @@
 "use client"
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import type { Conversation } from "@/lib/mock-data"
+import { AnimalAvatar } from "@/components/chat/animal-avatar"
 
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+
+const HOVER_TRANSITION =
+  "[transition-property:background-color] [transition-duration:120ms] [transition-timing-function:ease]"
 
 export function ChatListRow({
   conversation,
   selected,
   onSelect,
+  forceHover = false,
 }: {
   conversation: Conversation
   selected: boolean
   onSelect: () => void
+  /** Demo-only: renders the hover treatment without a real pointer hover. Used on /states. */
+  forceHover?: boolean
 }) {
-  const { name, preview, timestamp, unread, initials } = conversation
+  const { name, preview, timestamp, unread, initials, avatarId, online } = conversation
 
   return (
     <button
@@ -24,8 +30,11 @@ export function ChatListRow({
       onClick={onSelect}
       aria-current={selected ? "true" : undefined}
       className={cn(
-        "relative flex h-16 w-full shrink-0 items-center gap-3 px-4 text-left transition-colors",
-        selected ? "bg-accent" : "bg-card hover:bg-[#F0EDE8]",
+        "relative flex h-16 w-full shrink-0 items-center gap-3 px-4 text-left",
+        HOVER_TRANSITION,
+        selected ? "bg-accent" : "bg-card",
+        !selected && !forceHover && "hover:bg-[#F0EDE8]",
+        !selected && forceHover && "bg-[#F0EDE8]",
         FOCUS_RING
       )}
     >
@@ -36,20 +45,14 @@ export function ChatListRow({
         />
       )}
 
-      <Avatar size="lg" role="img" aria-label={name}>
-        <AvatarFallback>{initials}</AvatarFallback>
-      </Avatar>
+      <AnimalAvatar userId={avatarId} name={name} initials={initials} size="lg" online={online} />
 
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="flex items-baseline justify-between gap-2">
           <span
             className={cn(
-              "truncate text-base leading-6",
-              selected
-                ? "font-semibold text-primary"
-                : unread
-                  ? "font-semibold text-foreground"
-                  : "font-normal text-foreground"
+              "truncate text-base leading-6 text-foreground",
+              selected || unread ? "font-semibold" : "font-normal"
             )}
           >
             {name}

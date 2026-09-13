@@ -10,7 +10,7 @@ import { ChatListRow } from "@/components/chat/chat-list-row"
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
 
-function SkeletonRow() {
+export function SkeletonRow() {
   return (
     <div className="flex h-16 w-full shrink-0 items-center gap-3 px-4">
       <div className="size-10 shrink-0 rounded-full bg-[#EDEBE5]" />
@@ -77,7 +77,7 @@ export function ChatList({
             placeholder="Search"
             aria-label="Search conversations"
             className={cn(
-              "h-9 w-full rounded-lg border border-border bg-card pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-[#5C6B79]",
+              "h-9 w-full appearance-none rounded-lg border border-border bg-card pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-[#5C6B79]",
               "focus-visible:border-[#B4380A] focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
             )}
           />

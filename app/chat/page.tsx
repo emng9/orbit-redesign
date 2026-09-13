@@ -35,7 +35,7 @@ export default function ChatPage() {
       <div
         className={cn(
           "min-w-0 flex-1",
-          mobileView === "list" && "hidden md:flex"
+          mobileView === "list" && "hidden md:block"
         )}
       >
         <Conversation

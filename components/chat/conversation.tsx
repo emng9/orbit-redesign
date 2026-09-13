@@ -1,32 +1,28 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import {
-  ArrowLeft,
-  CircleAlert,
-  MoreVertical,
-  Phone,
-  Search,
-} from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { ArrowLeft, MoreHorizontal, Search, Users } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { conversations, fetchThread, type Message } from "@/lib/mock-data"
+import { conversations, fetchThread, needsDateDivider, formatDividerLabel, type Message } from "@/lib/mock-data"
 import { MessageRow } from "@/components/chat/message-row"
+import { DateDivider } from "@/components/chat/date-divider"
 import { Composer } from "@/components/chat/composer"
+import { VideoMenu } from "@/components/chat/video-menu"
 
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 
+const HOVER_TRANSITION =
+  "[transition-property:background-color] [transition-duration:120ms] [transition-timing-function:ease]"
+
 function HeaderIconButton({
   label,
   onClick,
-  disabled,
   children,
 }: {
   label: string
   onClick?: () => void
-  disabled?: boolean
   children: React.ReactNode
 }) {
   return (
@@ -34,13 +30,10 @@ function HeaderIconButton({
       type="button"
       aria-label={label}
       title={label}
-      disabled={disabled}
       onClick={onClick}
       className={cn(
-        "flex size-8 items-center justify-center rounded-lg text-[#5C6B79] transition-colors",
-        disabled
-          ? "cursor-not-allowed bg-[#F1EFE8] text-[#9E9A90]"
-          : "hover:bg-[#F0EDE8] hover:text-foreground",
+        "flex size-7 items-center justify-center rounded-lg text-[#5C6B79] hover:bg-[#F0EDE8]",
+        HOVER_TRANSITION,
         FOCUS_RING
       )}
     >
@@ -49,7 +42,89 @@ function HeaderIconButton({
   )
 }
 
-function MessageSkeletonRow({ wide }: { wide: boolean }) {
+function MemberCountPill({ count }: { count: number }) {
+  return (
+    <button
+      type="button"
+      aria-label={`${count} members`}
+      title={`${count} members`}
+      className={cn(
+        "flex items-center gap-2 rounded-lg border border-border bg-card px-2.5 py-1.5 hover:bg-[#F0EDE8]",
+        HOVER_TRANSITION,
+        FOCUS_RING
+      )}
+    >
+      <Users size={20} strokeWidth={1.5} className="text-[#5C6B79]" />
+      <span className="text-[15px] font-semibold leading-none text-foreground">{count}</span>
+    </button>
+  )
+}
+
+const MOBILE_MENU_ITEM =
+  "flex w-full items-center gap-3 px-3 py-2 text-left text-[15px] text-foreground hover:bg-[#F0EDE8]"
+
+/**
+ * Below 768px the header only has room for the back arrow, the name, the
+ * video control, and this button — member count and search move in here as
+ * labelled items so the name keeps the remaining width instead of truncating
+ * early.
+ */
+function MobileMoreMenu({ participantCount }: { participantCount: number }) {
+  const [open, setOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  function close() {
+    setOpen(false)
+  }
+
+  function handleBlur(event: React.FocusEvent<HTMLDivElement>) {
+    const next = event.relatedTarget as Node | null
+    if (!next || !containerRef.current?.contains(next)) close()
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Escape") close()
+  }
+
+  return (
+    <div ref={containerRef} className="relative" onBlur={handleBlur} onKeyDown={handleKeyDown}>
+      <button
+        type="button"
+        aria-label="More options"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-full text-[#5C6B79] hover:bg-[#F0EDE8]",
+          HOVER_TRANSITION,
+          FOCUS_RING
+        )}
+      >
+        <MoreHorizontal size={20} strokeWidth={1.5} />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          aria-label="Conversation options"
+          className="absolute top-[calc(100%+8px)] right-0 z-50 w-56 rounded-[10px] border border-border bg-card py-1 shadow-[0_1px_2px_rgba(11,31,51,0.06)]"
+        >
+          <button type="button" role="menuitem" onClick={close} className={cn(MOBILE_MENU_ITEM, HOVER_TRANSITION, FOCUS_RING)}>
+            <Users size={20} strokeWidth={1.5} className="shrink-0 text-[#5C6B79]" />
+            <span className="flex-1">Members</span>
+            <span className="text-[#5C6B79]">{participantCount}</span>
+          </button>
+          <button type="button" role="menuitem" onClick={close} className={cn(MOBILE_MENU_ITEM, HOVER_TRANSITION, FOCUS_RING)}>
+            <Search size={20} strokeWidth={1.5} className="shrink-0 text-[#5C6B79]" />
+            Search
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function MessageSkeletonRow({ wide }: { wide: boolean }) {
   return (
     <div className="mt-4 flex gap-3 px-6">
       <div className="size-8 shrink-0 rounded-full bg-[#EDEBE5]" />
@@ -69,9 +144,8 @@ export function Conversation({
   onBack?: () => void
 }) {
   const conversation = conversations.find((c) => c.id === conversationId)
-  const [status, setStatus] = useState<"loading" | "error" | "ready">("loading")
+  const [status, setStatus] = useState<"loading" | "ready">("loading")
   const [messages, setMessages] = useState<Message[]>([])
-  const [retryToken, setRetryToken] = useState(0)
 
   // Reset to "loading" during render when the conversation changes, rather
   // than from inside the effect below (see: adjusting state on prop change).
@@ -83,20 +157,15 @@ export function Conversation({
 
   useEffect(() => {
     let cancelled = false
-    fetchThread(conversationId)
-      .then((thread) => {
-        if (cancelled) return
-        setMessages(thread)
-        setStatus("ready")
-      })
-      .catch(() => {
-        if (cancelled) return
-        setStatus("error")
-      })
+    fetchThread(conversationId).then((thread) => {
+      if (cancelled) return
+      setMessages(thread)
+      setStatus("ready")
+    })
     return () => {
       cancelled = true
     }
-  }, [conversationId, retryToken])
+  }, [conversationId])
 
   function handleSend(text: string) {
     const now = new Date()
@@ -108,7 +177,7 @@ export function Conversation({
         authorName: "You",
         initials: "Y",
         text,
-        timestamp: now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }),
+        timestamp: now.toISOString(),
       },
     ])
   }
@@ -122,7 +191,8 @@ export function Conversation({
             aria-label="Back to chats"
             onClick={onBack}
             className={cn(
-              "flex size-8 shrink-0 items-center justify-center rounded-lg text-foreground hover:bg-[#F0EDE8] md:hidden",
+              "flex size-8 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-[#F0EDE8] md:hidden",
+              HOVER_TRANSITION,
               FOCUS_RING
             )}
           >
@@ -132,16 +202,19 @@ export function Conversation({
         <h2 className="min-w-0 flex-1 truncate text-base font-semibold leading-6 text-foreground">
           {conversation?.name ?? "Conversation"}
         </h2>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="hidden shrink-0 items-center gap-4 md:flex">
+          <MemberCountPill count={conversation?.participantCount ?? 0} />
+          <VideoMenu />
           <HeaderIconButton label="Search in conversation">
             <Search size={20} strokeWidth={1.5} />
           </HeaderIconButton>
-          <HeaderIconButton label="Start call (unavailable in this preview)" disabled>
-            <Phone size={20} strokeWidth={1.5} />
-          </HeaderIconButton>
           <HeaderIconButton label="More options">
-            <MoreVertical size={20} strokeWidth={1.5} />
+            <MoreHorizontal size={20} strokeWidth={1.5} />
           </HeaderIconButton>
+        </div>
+        <div className="flex shrink-0 items-center gap-1 md:hidden">
+          <VideoMenu />
+          <MobileMoreMenu participantCount={conversation?.participantCount ?? 0} />
         </div>
       </div>
 
@@ -160,23 +233,6 @@ export function Conversation({
             </>
           )}
 
-          {status === "error" && (
-            <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-              <CircleAlert size={20} className="text-[#5C6B79]" strokeWidth={1.5} />
-              <p className="text-sm text-[#4A5A6A]">Couldn&apos;t load this conversation.</p>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  setStatus("loading")
-                  setRetryToken((t) => t + 1)
-                }}
-              >
-                Try again
-              </Button>
-            </div>
-          )}
-
           {status === "ready" &&
             (messages.length === 0 ? (
               <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
@@ -186,13 +242,16 @@ export function Conversation({
               messages.map((message, index) => {
                 const previous = messages[index - 1]
                 const newGroup = !previous || previous.authorId !== message.authorId
+                const showDivider = needsDateDivider(previous, message)
                 return (
-                  <MessageRow
-                    key={message.id}
-                    message={message}
-                    showHeader={newGroup}
-                    newGroup={newGroup}
-                  />
+                  <div key={message.id}>
+                    {showDivider && <DateDivider label={formatDividerLabel(message.timestamp)} />}
+                    <MessageRow
+                      message={message}
+                      showHeader={newGroup || showDivider}
+                      newGroup={newGroup || showDivider}
+                    />
+                  </div>
                 )
               })
             ))}
