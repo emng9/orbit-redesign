@@ -180,6 +180,22 @@ Adding row hover and adding reactions in separate passes produced a conflict nei
 
 The no-hover-change decision follows Slack. The pill is a stable object whose state means something, so changing its appearance on hover would compete with the state it is already carrying. The cursor is enough to say it is clickable.
 
+### 18. Unread state
+
+Two problems, found by clicking through the list rather than by reading the code. A5 in the critique had been marked fixed but only half of it was.
+
+> Two problems with the unread state in the conversation list.
+>
+> Clicking an unread conversation must mark it read. The name returns to Regular weight, the preview returns to #4A5A6A, and the dot disappears. This currently does not happen.
+>
+> The preview line on an unread row is still rendering at #4A5A6A. It must darken to #0B1F33 while unread, alongside the name weight and the dot. That is three signals, as specified, so unread is readable without relying on colour.
+>
+> Run npm run build when done and confirm it passes.
+
+Marking read on click was never in the master prompt, which is a gap in my spec rather than the build. Section 7 described what unread looks like and never said what ends it, so the build had no reason to implement a transition out of it. The same omission as the avatar and the rail: I described a state and assumed the behaviour came with it.
+
+I also considered bolding the preview alongside darkening it and decided against it. Weight is what separates the name from the preview, so bolding both flattens the row's reading order, and with three unread rows out of eight a third of the list becomes heavy text, at which point none of it reads as emphasis. Darkening plus name weight plus the dot is already three signals. The rule stands as specified.
+
 ---
 
 ## What I changed by hand
