@@ -10,6 +10,9 @@ import { Conversation } from "@/components/chat/conversation"
 export default function ChatPage() {
   const [selectedId, setSelectedId] = useState(conversations[0].id)
   const [mobileView, setMobileView] = useState<"list" | "conversation">("list")
+  // Conversation ids the user has opened this session, overriding their
+  // mock-data unread flag. No persistence beyond a reload.
+  const [readIds, setReadIds] = useState<Set<string>>(new Set())
   // Reaction overrides keyed by message id. Each entry is seeded from that
   // message's mock-data reactions the first time it's toggled, then kept
   // here for the rest of the session — no persistence beyond a reload.
@@ -18,6 +21,7 @@ export default function ChatPage() {
   function handleSelect(id: string) {
     setSelectedId(id)
     setMobileView("conversation")
+    setReadIds((prev) => (prev.has(id) ? prev : new Set(prev).add(id)))
   }
 
   function handleToggleReaction(messageId: string, emoji: string, currentReactions: Reaction[]) {
@@ -61,7 +65,7 @@ export default function ChatPage() {
           mobileView === "conversation" && "hidden md:block"
         )}
       >
-        <ChatList selectedId={selectedId} onSelect={handleSelect} />
+        <ChatList selectedId={selectedId} onSelect={handleSelect} readIds={readIds} />
       </div>
 
       <div

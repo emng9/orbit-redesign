@@ -28,9 +28,12 @@ export function SkeletonRow() {
 export function ChatList({
   selectedId,
   onSelect,
+  readIds,
 }: {
   selectedId: string
   onSelect: (id: string) => void
+  /** Conversation ids opened this session — overrides their mock-data unread flag. */
+  readIds: Set<string>
 }) {
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState("")
@@ -135,7 +138,9 @@ export function ChatList({
             {filtered.map((conversation) => (
               <ChatListRow
                 key={conversation.id}
-                conversation={conversation}
+                conversation={
+                  readIds.has(conversation.id) ? { ...conversation, unread: false } : conversation
+                }
                 selected={conversation.id === selectedId}
                 onSelect={() => onSelect(conversation.id)}
               />
