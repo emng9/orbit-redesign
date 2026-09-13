@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { ArrowLeft, MoreHorizontal, Search, Users } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
-import { conversations, fetchThread, needsDateDivider, formatDividerLabel, type Message } from "@/lib/mock-data"
+import { conversations, currentUser, fetchThread, needsDateDivider, formatDividerLabel, type Message } from "@/lib/mock-data"
 import { MessageRow } from "@/components/chat/message-row"
 import { DateDivider } from "@/components/chat/date-divider"
 import { Composer } from "@/components/chat/composer"
@@ -146,6 +146,7 @@ export function Conversation({
   const conversation = conversations.find((c) => c.id === conversationId)
   const [status, setStatus] = useState<"loading" | "ready">("loading")
   const [messages, setMessages] = useState<Message[]>([])
+  const scrollWrapRef = useRef<HTMLDivElement>(null)
 
   // Reset to "loading" during render when the conversation changes, rather
   // than from inside the effect below (see: adjusting state on prop change).
@@ -173,13 +174,18 @@ export function Conversation({
       ...prev,
       {
         id: `local-${now.getTime()}`,
-        authorId: "me",
-        authorName: "You",
-        initials: "Y",
+        authorId: currentUser.id,
+        authorName: currentUser.name,
+        initials: currentUser.initials,
         text,
         timestamp: now.toISOString(),
       },
     ])
+    // Wait a frame so the new message is in the DOM and scrollHeight is current.
+    requestAnimationFrame(() => {
+      const viewport = scrollWrapRef.current?.querySelector('[data-slot="scroll-area-viewport"]')
+      viewport?.scrollTo({ top: viewport.scrollHeight, behavior: "smooth" })
+    })
   }
 
   return (
@@ -218,45 +224,47 @@ export function Conversation({
         </div>
       </div>
 
-      <ScrollArea className="min-h-0 flex-1">
-        <div
-          role="log"
-          aria-live="polite"
-          aria-label={`Messages with ${conversation?.name ?? "conversation"}`}
-          className="py-4"
-        >
-          {status === "loading" && (
-            <>
-              <MessageSkeletonRow wide />
-              <MessageSkeletonRow wide={false} />
-              <MessageSkeletonRow wide />
-            </>
-          )}
+      <div ref={scrollWrapRef} className="min-h-0 flex-1">
+        <ScrollArea className="size-full">
+          <div
+            role="log"
+            aria-live="polite"
+            aria-label={`Messages with ${conversation?.name ?? "conversation"}`}
+            className="py-4"
+          >
+            {status === "loading" && (
+              <>
+                <MessageSkeletonRow wide />
+                <MessageSkeletonRow wide={false} />
+                <MessageSkeletonRow wide />
+              </>
+            )}
 
-          {status === "ready" &&
-            (messages.length === 0 ? (
-              <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
-                <p className="text-sm text-[#4A5A6A]">No messages yet. Say hello.</p>
-              </div>
-            ) : (
-              messages.map((message, index) => {
-                const previous = messages[index - 1]
-                const newGroup = !previous || previous.authorId !== message.authorId
-                const showDivider = needsDateDivider(previous, message)
-                return (
-                  <div key={message.id}>
-                    {showDivider && <DateDivider label={formatDividerLabel(message.timestamp)} />}
-                    <MessageRow
-                      message={message}
-                      showHeader={newGroup || showDivider}
-                      newGroup={newGroup || showDivider}
-                    />
-                  </div>
-                )
-              })
-            ))}
-        </div>
-      </ScrollArea>
+            {status === "ready" &&
+              (messages.length === 0 ? (
+                <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
+                  <p className="text-sm text-[#4A5A6A]">No messages yet. Say hello.</p>
+                </div>
+              ) : (
+                messages.map((message, index) => {
+                  const previous = messages[index - 1]
+                  const newGroup = !previous || previous.authorId !== message.authorId
+                  const showDivider = needsDateDivider(previous, message)
+                  return (
+                    <div key={message.id}>
+                      {showDivider && <DateDivider label={formatDividerLabel(message.timestamp)} />}
+                      <MessageRow
+                        message={message}
+                        showHeader={newGroup || showDivider}
+                        newGroup={newGroup || showDivider}
+                      />
+                    </div>
+                  )
+                })
+              ))}
+          </div>
+        </ScrollArea>
+      </div>
 
       <Composer onSend={handleSend} />
     </div>
