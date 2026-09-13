@@ -152,6 +152,34 @@ Everything in 13 and 14 was new scope written after the master prompt, so none o
 
 Asking for the report before the fix is the point. A prompt that says "make it match" gets answered with "done" and no inspection, which is the exact failure recorded as A1 in the critique.
 
+### 16. Leading date divider
+
+Looking at a thread from the top, the first divider had nothing above it to separate.
+
+> Remove the date divider only when it is the first element in a conversation. A divider separates two message groups, so with nothing above it there is nothing to separate. The first group starts directly with the sender name and message.
+>
+> All other dividers keep their existing behaviour: they still appear between groups on a new day or after a gap of more than thirty minutes. Do not change that rule.
+>
+> Run npm run build when done and confirm it passes.
+
+The second paragraph exists because the first one on its own invites the model to rewrite the whole divider rule. Naming what must not change is as useful as naming what should.
+
+### 17. Reaction pill on a hovered row
+
+Adding row hover and adding reactions in separate passes produced a conflict neither pass could have caught alone. The default pill is white on a white surface, so on the #F0EDE8 hover fill it nearly disappeared.
+
+> The default reaction pill blends into the hovered message row. Its fill is transparent or inheriting the row background rather than being explicitly white.
+>
+> Set the default pill fill to an opaque #FFFFFF that does not change on row hover or on pill hover. The border stays 1px #E3E0DA. The pill must look identical whether the row behind it is hovered or not.
+>
+> On hovering the pill itself, the only change is the cursor. No fill change, no border change. Clicking it toggles the reaction as it does now.
+>
+> The reacted state keeps its 1px #B4380A border and #FDF1EC fill, also opaque and also unchanged on hover.
+>
+> Run npm run build when done and confirm it passes.
+
+The no-hover-change decision follows Slack. The pill is a stable object whose state means something, so changing its appearance on hover would compete with the state it is already carrying. The cursor is enough to say it is clickable.
+
 ---
 
 ## What I changed by hand
