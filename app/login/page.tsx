@@ -59,8 +59,8 @@ export default function LoginPage() {
           <Image
             src="/brand/orbit-logo.png"
             alt=""
-            width={48}
-            height={48}
+            width={72}
+            height={72}
             className="rounded-md object-cover"
           />
           <h1 className="text-[28px] leading-tight font-semibold">
