@@ -81,13 +81,13 @@ export default function LoginPage() {
 
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="email" className="text-sm font-medium text-foreground">
-                  Email
+                  Email or username
                 </label>
                 <Input
                   id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="Email"
+                  type="text"
+                  autoComplete="username"
+                  placeholder="Email or username"
                   className="h-11"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
