@@ -10,7 +10,7 @@ A redesign of WP Orbit, WanPanel's internal team chat, covering a visual audit, 
 
 | What | Where |
 |---|---|
-| Deployed app | https://orbit-redesign-gamma.vercel.app |
+| Deployed app | https://orbit-redesign-git-main-emily-nguyen-www.vercel.app/login |
 | Repository | https://github.com/emng9/orbit-redesign |
 | Interactive prototype | https://royal-stoop-24103056.figma.site |
 | Figma design file | [WanPanel Orbit Redesign](https://www.figma.com/design/Ait3zMnIx1XrFU63i9W5iJ/WanPanel-Orbit-Redesign) |
