@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { MessageSquareOff, Plus, Search } from "lucide-react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { MessageSquareOff, Plus, Search, X } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { conversations, type Conversation } from "@/lib/mock-data"
@@ -9,6 +9,9 @@ import { ChatListRow } from "@/components/chat/chat-list-row"
 
 const FOCUS_RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+
+const HOVER_TRANSITION =
+  "[transition-property:background-color] [transition-duration:120ms] [transition-timing-function:ease]"
 
 export function SkeletonRow() {
   return (
@@ -31,6 +34,7 @@ export function ChatList({
 }) {
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState("")
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 550)
@@ -71,16 +75,36 @@ export function ChatList({
             className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-[#5C6B79]"
           />
           <input
+            ref={searchInputRef}
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search"
             aria-label="Search conversations"
             className={cn(
-              "h-9 w-full appearance-none rounded-lg border border-border bg-card pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-[#5C6B79]",
+              "h-9 w-full appearance-none rounded-lg border border-border bg-card pl-8 text-sm text-foreground outline-none placeholder:text-[#5C6B79]",
+              query ? "pr-9" : "pr-3",
+              "[&::-webkit-search-cancel-button]:appearance-none",
               "focus-visible:border-[#B4380A] focus-visible:ring-2 focus-visible:ring-[#B4380A] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
             )}
           />
+          {query && (
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => {
+                setQuery("")
+                searchInputRef.current?.focus()
+              }}
+              className={cn(
+                "absolute top-1/2 right-1 flex size-7 -translate-y-1/2 items-center justify-center rounded-lg text-[#5C6B79] hover:bg-[#F0EDE8]",
+                HOVER_TRANSITION,
+                FOCUS_RING
+              )}
+            >
+              <X size={16} strokeWidth={1.5} />
+            </button>
+          )}
         </div>
       </div>
 
