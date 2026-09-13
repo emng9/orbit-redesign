@@ -18,7 +18,7 @@ A redesign of WP Orbit, WanPanel's internal team chat, covering a visual audit, 
 **Demo account**, for both the deployed app and the prototype:
 
 ```
-Username: shirleyli2026
+Email: shirleyli@wanpanel.ai
 Password: wanpanelorbitredesign
 ```
 

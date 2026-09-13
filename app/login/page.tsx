@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 
-const VALID_USERNAME = "shirleyli2026"
+const VALID_EMAIL = "shirleyli@wanpanel.ai"
 const VALID_PASSWORD = "wanpanelorbitredesign"
 
 // Concentric ring diameters (px), all centred on the same point behind the brand mark.
@@ -19,14 +19,14 @@ const FOCUS_RING =
 
 export default function LoginPage() {
   const router = useRouter()
-  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState(false)
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+    if (email === VALID_EMAIL && password === VALID_PASSWORD) {
       setError(false)
       window.localStorage.setItem("orbit-authenticated", "true")
       router.push("/chat")
@@ -80,17 +80,17 @@ export default function LoginPage() {
               </p>
 
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="username" className="text-sm font-medium text-foreground">
-                  Email or username
+                <label htmlFor="email" className="text-sm font-medium text-foreground">
+                  Email
                 </label>
                 <Input
-                  id="username"
-                  type="text"
-                  autoComplete="username"
-                  placeholder="Email or username"
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="Email"
                   className="h-11"
-                  value={username}
-                  onChange={(event) => setUsername(event.target.value)}
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                 />
               </div>
 
@@ -123,7 +123,7 @@ export default function LoginPage() {
                 </div>
                 {error && (
                   <p className="text-sm text-destructive">
-                    Incorrect email/username or password.
+                    Incorrect email or password.
                   </p>
                 )}
               </div>
